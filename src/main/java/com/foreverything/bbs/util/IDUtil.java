@@ -1,8 +1,10 @@
 package com.foreverything.bbs.util;
 
 import com.foreverything.bbs.mapper.TopicMapper;
+import com.foreverything.bbs.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -20,11 +22,16 @@ import java.util.Random;
 public class IDUtil {
 
     private static IDUtil idUtil;
+    private static IDUtil idUtil1;
 
     private static List<Long> topicIDList=new ArrayList<>();
+    private static List<Integer> userIDList=new ArrayList<>();
 
     @Autowired
     TopicMapper topicMapper;
+
+    @Autowired
+    UserMapper userMapper;
 
     @PostConstruct
     public void init(){
@@ -43,6 +50,14 @@ public class IDUtil {
         topicIDList=topicMapper.getTopicIdCollection();
     }
 
+    @PostConstruct
+    public void init1(){
+        idUtil1=this;
+        idUtil1.userMapper=this.userMapper; //装配Mapper后给储存topicID的List赋值
+
+        userIDList=userMapper.getUserIdCollection();
+    }
+
     public static Long initTopicID(){
         /**
          * @Author:CeaserBorgia
@@ -55,6 +70,13 @@ public class IDUtil {
         Long id;
         while(topicIDList.contains((id=randomALongID()))){
             id=randomALongID();
+        }
+        return id;
+    }
+    public static int initUserID(){
+        int id;
+        while (userIDList.contains((id=randomID()))){
+            id=randomID();
         }
         return id;
     }
@@ -74,6 +96,14 @@ public class IDUtil {
             id+=1e11;
         }
         return id;
+    }
+
+    private static int randomID(){
+        int radom = new Random().nextInt(999999);
+        if (radom < 100000) {
+            radom += 100000;
+        }
+        return radom;
     }
 
 }
